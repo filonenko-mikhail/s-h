@@ -50,7 +50,7 @@
         crossorigin="anonymous"></script>
 
     <script>
-        Decimal.set({ precision: 20, rounding: 0, minE: -3});
+        Decimal.set({ precision: 20, rounding: 0, minE: -3 });
         Decimal.set({ minE: -3 });
 
         var gross = document.getElementById('gross');
@@ -58,7 +58,7 @@
         const arr = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
             'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
         var tableBody = document.getElementById('tableBody');
-        
+
         gross.addEventListener("change", (event) => {
 
             try {
@@ -69,6 +69,8 @@
 
                 tableBody.replaceChildren();
 
+                var grossSum = Decimal(0);
+                var netSum = Decimal(0);
                 for (let i = 0; i < arr.length; i++) {
                     const row = document.createElement("tr");
                     // Create and append cells for each data point
@@ -81,12 +83,15 @@
                     grossTd.textContent = grossVal.toString();
                     row.appendChild(grossTd);
 
+
+                    grossSum = grossSum.plus(grossVal);
+
                     nBase = nBase.plus(grossVal);
 
                     const nbaseTd = document.createElement("td");
                     nbaseTd.textContent = nBase.toString();
                     row.appendChild(nbaseTd);
-                    
+
                     var st = new Decimal('0.00')
                     var ndfl = new Decimal(0)
                     if (nBase.lte(new Decimal(2_400_000))) {
@@ -104,6 +109,8 @@
 
                     var net = grossVal.minus(ndfl)
 
+                    netSum = netSum.plus(net)
+
                     const netTd = document.createElement("td");
                     netTd.textContent = net.toString();
                     row.appendChild(netTd);
@@ -115,12 +122,40 @@
 
 
                     const stTd = document.createElement("td");
-                    stTd.textContent = st.mul('100') .toString();
+                    stTd.textContent = st.mul('100').toString();
                     row.appendChild(stTd);
 
                     tableBody.appendChild(row);
 
                 }
+
+                const result = document.createElement("tr");
+                result.className = 'table-info';
+
+                const resultTd1 = document.createElement("td");
+                resultTd1.textContent = "Итого";
+                result.appendChild(resultTd1);
+
+                const resultTd2 = document.createElement("td");
+                resultTd2.textContent = grossSum.toString();
+                result.appendChild(resultTd2);
+
+                const resultTd3 = document.createElement("td");
+                resultTd3.textContent = '';
+                result.appendChild(resultTd3);
+
+                const resultTd4 = document.createElement("td");
+                resultTd4.textContent = netSum.toString()
+                result.appendChild(resultTd4);
+                const resultTd5 = document.createElement("td");
+                resultTd5.textContent = '';
+                result.appendChild(resultTd5);
+
+                const resultTd6 = document.createElement("td");
+                resultTd6.textContent = '';
+                result.appendChild(resultTd6);
+
+                tableBody.appendChild(result);
 
             } catch (error) {
                 alert("Неправильное значение заработной платы" + toString(error));

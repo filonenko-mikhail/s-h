@@ -4,43 +4,52 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Bootstrap demo</title>
+    <title>Калькулятор офера</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
 </head>
 
 <body>
     <div class="container">
-        <h1>Калькулятор суммы оффера</h1>
         <div class="row">
             <div class="col">
+                <h1>Калькулятор суммы оффера</h1>
+            </div>
+        </div>
+        <div class="row justify-content-start">
+            <div class="col-sm">
+                <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                    <input type="radio" class="btn-check" name="btnradio" id="grossRadio" autocomplete="off" checked>
+                    <label class="btn btn-outline-primary" for="grossRadio">До НДФЛ (gross)</label>
+
+                    <input type="radio" class="btn-check" name="btnradio" id="netRadio" autocomplete="off">
+                    <label class="btn btn-outline-primary" for="netRadio">На руки (net)</label>
+                </div>
+            </div>
+            <div class="col-sm">
                 <div class="input-group mb-3">
-                    <input id="gross" type="text" class="form-control" placeholder="Заработная плата gross"
-                        aria-label="Заработная плата gross" aria-describedby="basic-addon2">
+                    <input id="amount" type="text" class="form-control" placeholder="Сумма" aria-label="Сумма"
+                        aria-describedby="basic-addon2">
                     <div class="input-group-append">
                         <span class="input-group-text" id="basic-addon2">₽</span>
                     </div>
                 </div>
             </div>
-            <div class="col"></div>
-            <div class="col"></div>
-            <div class="col"></div>
         </div>
-        <div class="row">
+        <div class="row ">
             <div class="table-responsive">
-
                 <table class="table">
                     <thead>
                         <tr>
                             <th scope="col">Месяц</th>
-                            <th scope="col">Совокупный доход в месяц, Gross</th>
+                            <th scope="col">Совокупный доход в месяц, gross</th>
                             <th scope="col">Налогооблагаемая база</th>
                             <th scope="col">Совокупный доход в месяц, net</th>
                             <th scope="col">НДФЛ</th>
                             <th scope="col">Ставка</th>
                         </tr>
                     </thead>
-                    <tbody id="tableBody">
+                    <tbody id="tableBody" class="table-group-divider">
 
                     </tbody>
             </div>
@@ -54,117 +63,143 @@
         crossorigin="anonymous"></script>
 
     <script>
-        Decimal.set({ precision: 20, rounding: 0, minE: -3 });
-        Decimal.set({ minE: -3 });
-
-        var gross = document.getElementById('gross');
+        Decimal.set({ precision: 20, rounding: Decimal.ROUND_UP, minE: -3 });
 
         const arr = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
             'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
         var tableBody = document.getElementById('tableBody');
 
-        gross.addEventListener("change", (event) => {
-
-            try {
-                var grossAmount = new Decimal(event.target.value);
-
-                var oldnBase = Decimal(0);
-                var nBase = Decimal(0);
-
-                tableBody.replaceChildren();
-
-                var grossSum = Decimal(0);
-                var netSum = Decimal(0);
-                for (let i = 0; i < arr.length; i++) {
-                    const row = document.createElement("tr");
-                    // Create and append cells for each data point
-                    const month = document.createElement("td");
-                    month.textContent = arr[i];
-                    row.appendChild(month);
-
-                    grossVal = grossAmount;
-                    const grossTd = document.createElement("td");
-                    grossTd.textContent = grossVal.toString();
-                    row.appendChild(grossTd);
-
-
-                    grossSum = grossSum.plus(grossVal);
-
-                    nBase = nBase.plus(grossVal);
-
-                    const nbaseTd = document.createElement("td");
-                    nbaseTd.textContent = nBase.toString();
-                    row.appendChild(nbaseTd);
-
-                    var st = new Decimal('0.00')
-                    var ndfl = new Decimal(0)
-                    if (nBase.lte(new Decimal(2_400_000))) {
-                        st = new Decimal('0.13')
-                    } else if (nBase.lte(new Decimal(5_000_000))) {
-                        st = new Decimal('0.15')
-                    } else if (nBase.lte(new Decimal(20_000_000))) {
-                        st = new Decimal('0.18')
-                    } else if (nBase.lte(new Decimal(50_000_000))) {
-                        st = new Decimal('0.20')
-                    } else {
-                        st = new Decimal('0.22')
-                    }
-                    ndfl = grossVal.mul(st)
-
-                    var net = grossVal.minus(ndfl)
-
-                    netSum = netSum.plus(net)
-
-                    const netTd = document.createElement("td");
-                    netTd.textContent = net.toString();
-                    row.appendChild(netTd);
-
-
-                    const ndflTd = document.createElement("td");
-                    ndflTd.textContent = ndfl.toString();
-                    row.appendChild(ndflTd);
-
-
-                    const stTd = document.createElement("td");
-                    stTd.textContent = st.mul('100').toString();
-                    row.appendChild(stTd);
-
-                    tableBody.appendChild(row);
-
-                }
-
-                const result = document.createElement("tr");
-                result.className = 'table-info';
-
-                const resultTd1 = document.createElement("td");
-                resultTd1.textContent = "Итого";
-                result.appendChild(resultTd1);
-
-                const resultTd2 = document.createElement("td");
-                resultTd2.textContent = grossSum.toString();
-                result.appendChild(resultTd2);
-
-                const resultTd3 = document.createElement("td");
-                resultTd3.textContent = '';
-                result.appendChild(resultTd3);
-
-                const resultTd4 = document.createElement("td");
-                resultTd4.textContent = netSum.toString()
-                result.appendChild(resultTd4);
-                const resultTd5 = document.createElement("td");
-                resultTd5.textContent = '';
-                result.appendChild(resultTd5);
-
-                const resultTd6 = document.createElement("td");
-                resultTd6.textContent = '';
-                result.appendChild(resultTd6);
-
-                tableBody.appendChild(result);
-
-            } catch (error) {
-                alert("Неправильное значение заработной платы" + toString(error));
-            } finally {
+        function calc(value) {
+            tableBody.replaceChildren();
+            if (value == '') {
+                return
             }
+            var amount = new Decimal(0);
+            try {
+                amount = new Decimal(value);
+            } catch (error) {
+                alert("Неправильное значение суммы заработной платы");
+                return;
+            }
+
+            if (netRadio.checked) {
+                var st = new Decimal('0.00');
+                if (amount.lt(new Decimal(2_400_000))) {
+                    st = new Decimal('0.13');
+                } else if (amount.lt(new Decimal(5_000_000))) {
+                    st = new Decimal('0.15');
+                } else if (amount.lt(new Decimal(20_000_000))) {
+                    st = new Decimal('0.18');
+                } else if (amount.lt(new Decimal(50_000_000))) {
+                    st = new Decimal('0.20');
+                } else {
+                    st = new Decimal('0.22');
+                }
+                amount = amount.div(new Decimal(1).minus(st)).round();
+            }
+
+            var oldnBase = Decimal(0);
+            var nBase = Decimal(0);
+
+            var grossSum = Decimal(0);
+            var netSum = Decimal(0);
+
+            for (let i = 0; i < arr.length; i++) {
+                const row = document.createElement("tr");
+                const month = document.createElement("th");
+                month.setAttribute("scope", "row");
+                month.textContent = arr[i];
+                row.appendChild(month);
+
+                const grossTd = document.createElement("td");
+                grossTd.textContent = amount.toFixed(2);
+                row.appendChild(grossTd);
+
+                grossSum = grossSum.plus(amount);
+
+                nBase = nBase.plus(amount);
+
+                const nbaseTd = document.createElement("td");
+                nbaseTd.textContent = nBase.toFixed(2);
+                row.appendChild(nbaseTd);
+
+                var st = new Decimal('0.00');
+                var ndfl = new Decimal(0);
+                if (nBase.lte(new Decimal(2_400_000))) {
+                    st = new Decimal('0.13');
+                } else if (nBase.lt(new Decimal(5_000_000))) {
+                    st = new Decimal('0.15');
+                } else if (nBase.lt(new Decimal(20_000_000))) {
+                    st = new Decimal('0.18');
+                } else if (nBase.lt(new Decimal(50_000_000))) {
+                    st = new Decimal('0.20');
+                } else {
+                    st = new Decimal('0.22');
+                }
+                ndfl = amount.mul(st);
+
+                var net = amount.minus(ndfl);
+
+                netSum = netSum.plus(net);
+
+                const netTd = document.createElement("td");
+                netTd.textContent = net.toFixed(2);
+                row.appendChild(netTd);
+
+                const ndflTd = document.createElement("td");
+                ndflTd.textContent = ndfl.toFixed(2);
+                row.appendChild(ndflTd);
+
+                const stTd = document.createElement("td");
+                stTd.textContent = st.mul('100').toFixed(2);
+                row.appendChild(stTd);
+
+                tableBody.appendChild(row);
+            }
+
+            const result = document.createElement("tr");
+            result.className = 'table-info';
+
+            const resultTd1 = document.createElement("th");
+            resultTd1.setAttribute("scope", "row");
+            resultTd1.textContent = "Итого";
+            result.appendChild(resultTd1);
+
+            const resultTd2 = document.createElement("td");
+            resultTd2.textContent = grossSum.toFixed(2);
+            result.appendChild(resultTd2);
+
+            const resultTd3 = document.createElement("td");
+            resultTd3.textContent = '';
+            result.appendChild(resultTd3);
+
+            const resultTd4 = document.createElement("td");
+            resultTd4.textContent = netSum.toFixed(2);
+            result.appendChild(resultTd4);
+            const resultTd5 = document.createElement("td");
+            resultTd5.textContent = '';
+            result.appendChild(resultTd5);
+
+            const resultTd6 = document.createElement("td");
+            resultTd6.textContent = '';
+            result.appendChild(resultTd6);
+
+            tableBody.appendChild(result);
+        }
+
+
+        var amountEl = document.getElementById('amount');
+        var grossRadio = document.getElementById('grossRadio');
+        var netRadio = document.getElementById('netRadio');
+        grossRadio.addEventListener('change', function () {
+            calc(amountEl.value);
+        });
+        netRadio.addEventListener('change', function () {
+            calc(amountEl.value);
+        });
+
+        amountEl.addEventListener("change", (event) => {
+            calc(event.target.value);
         });
 
     </script>

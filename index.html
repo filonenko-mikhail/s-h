@@ -4,12 +4,20 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
     <title>Калькулятор суммы офера</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans&display=swap" rel="stylesheet">
 
     <link href="https://printjs-4de6.kxcdn.com/print.min.css" rel="stylesheet">
+
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+    <link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet" />
+
+
+    <script src="https://cdn.jsdelivr.net/npm/simple-datatables@9.0.3"></script>
 
     <style>
         #logo {
@@ -18,145 +26,196 @@
             color: #333;
         }
 
-        .hide {
-            display: none;
-        }
+        
     </style>
+
+    <script>
+        // On page load or when changing themes, best to add inline in `head` to avoid FOUC
+        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.remove('dark');
+        } else {
+            document.documentElement.classList.remove('dark')
+        }
+    </script>
 </head>
 
-<body>
-    <div class="container" id="content">
-        <div class="row">
-            <div class="col">
-                <h1 id="logo">Search&Hire</h1>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col">
-                <h3>Калькулятор суммы оффера</h3>
-            </div>
-        </div>
-        <div class="row align-items-center">
-            <div class="col" id="input">
-                <div class="row align-items-center">
-                    <div class="col">
-                        <div class="btn-group" role="group" aria-label="Settings for amount">
-                            <input type="radio" class="btn-check" name="btnradio" id="grossRadio" autocomplete="off"
-                                checked>
-                            <label class="btn btn-outline-primary" for="grossRadio">До НДФЛ (gross)</label>
-
-                            <input type="radio" class="btn-check" name="btnradio" id="netRadio" autocomplete="off">
-                            <label class="btn btn-outline-primary" for="netRadio">На руки (net)</label>
-                        </div>
-                    </div>
-                    <div class="col">
-                        <div class="input-group">
-                            <input id="amount" type="text" class="form-control" placeholder="Сумма" aria-label="Сумма"
-                                aria-describedby="basic-addon2">
-                            <div class="input-group-append">
-                                <span class="input-group-text" id="basic-addon2">₽</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col">
-                        <div class="row align-items-center" id="netOpts">
-                            <!--NET OPTS-->
-                        </div>
-
-                        <div class="row align-items-center" id="grossOpts">
-                            <div class="col">
-                                С января
-                            </div>
-                            <div class="col">
-                                <button type="button" class="btn btn-primary" id="grossAddition"
-                                    bs-toggle="button">Добавить</button>
-                            </div>
-                        </div>
-                    </div>
+<body class="p-6 font-sans antialiased">
+    <h1 id="logo" class="text-4xl font-bold">
+        Search&Hire
+    </h1>
+    <form class="">
+        <div>
+            <label for="amount" class="block mb-2 text-sm font-medium text-gray-900 ">Сумма</label>
+            <div class="relative">
+                <div class="absolute inset-y-0 end-3 flex items-center ps-3.5 pointer-events-none">
+                    <svg class="w-4 h-4 text-gray-500" width="50%" height="50%" viewBox="0 0 24 24" fill="none"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M8.5 11.5H14.5C16.7091 11.5 18.5 9.70914 18.5 7.5C18.5 5.29086 16.7091 3.5 14.5 3.5H8.5V11.5ZM8.5 11.5H6.5M13.5 15.5H6.5M8.5 4V20.5"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
                 </div>
-
-                <div class="row align-items-center">
-                    <div class="col" id="grossOptsContainer">
-                    </div>
-                </div>
-
-                <template id="grossOptsTemplate">
-                    <div class="row align-items-center" id="grossOpts2">
-                        <div class="col" id="change">
-                            Изменение
-                        </div>
-                        <div class="col">
-                            <div class="input-group">
-                                <input type="text" class="form-control" placeholder="Сумма" aria-label="Сумма"
-                                    aria-describedby="basic-ruble" id="additionalAmount">
-                                <div class="input-group-append">
-                                    <span class="input-group-text" id="basic-ruble">₽</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div class="row">
-                                <div class="col">
-                                    <select class="form-select" aria-label="Месяц" id="month">
-                                        <option value="1">Февраль</option>
-                                        <option value="2">Март</option>
-                                        <option value="3">Апрель</option>
-                                        <option value="4">Май</option>
-                                        <option value="5">Июнь</option>
-                                        <option value="6">Июль</option>
-                                        <option value="7">Август</option>
-                                        <option value="8">Сентябрь</option>
-                                        <option value="9">Октябрь</option>
-                                        <option value="10">Ноябрь</option>
-                                        <option value="11">Декабрь</option>
-                                    </select>
-                                    
-                                </div>
-
-                                <div class="col">
-                                    <button type="button" class="btn btn-danger" id="remove">Удалить</button>
-                                </div>
-                            </div>
-                        </div>
-                </template>
-
-            </div>
-
-        </div>
-        <div class="row">
-            <div class="table-responsive">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th scope="col">Месяц</th>
-                            <th scope="col">Совокупный доход в месяц (gross)</th>
-                            <th scope="col">Налогооблагаемая база</th>
-                            <th scope="col">Совокупный доход в месяц (net)</th>
-                            <th scope="col">НДФЛ</th>
-                            <th scope="col">Ставка НДФЛ</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tableBody" class="table-group-divider">
-                    </tbody>
-                    <tfoot id="tableFoot" class="table-group-divider">
-                    </tfoot>
-                </table>
+                <input type="text" id="amount"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                    placeholder="Введите сумму" required />
             </div>
         </div>
-        <div class="row">
-            <div class="col">
-                <button type="button" class="btn btn-primary" id="generate-pdf">PDF</button>
-                <button type="button" class="btn btn-primary" id="print" onclick="">Print</button>
-                <button type="button" class="btn btn-primary" id="copy-url">Copy url</button>
-            </div>
+        <div class="">
+            <input checked id="netRadio" type="radio" value="" name="default-radio"
+                class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 focus:ring-2">
+            <label for="netRadio" class="ms-2 text-sm font-medium text-gray-900 ">На руки</label>
         </div>
+        <div class="">
+            <input id="grossRadio" type="radio" value="" name="default-radio"
+                class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 ">
+            <label for="grossRadio" class="ms-2 text-sm font-medium text-gray-900">До вычета НДФЛ</label>
+        </div>
+    </form>
+
+    <div class="" id="netOpts">
+        <!--TODO opts-->
     </div>
+
+    <div class="" id="grossOpts">
+        <button type="button" id="grossAddition"
+            class="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium text-sm px-5 py-2.5 text-center me-2 mb-2">Добавить
+            изменение</button>
+    </div>
+    <div class="" id="grossOptsContainer">
+    </div>
+
+
+    <div class="">
+        <button type="button" id="generate-pdf"
+            class="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium text-sm px-5 py-2.5 text-center me-2 mb-2">PDF</button>
+        <button type="button" id="print"
+            class="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium text-sm px-5 py-2.5 text-center me-2 mb-2">Печать</button>
+        <button type="button" id="copy-url"
+            class="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium text-sm px-5 py-2.5 text-center me-2 mb-2">Копировать
+            URL</button>
+    </div>
+
+    <div id="alert-ulr-copied" class="flex items-center p-4 mb-4 text-green-800 bg-green-50" role="alert" hidden>
+        <svg class="shrink-0 w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
+            viewBox="0 0 20 20">
+            <path
+                d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
+        </svg>
+        <span class="sr-only">Info</span>
+        <div class="ms-3 text-sm font-medium">
+            Ссылка скопирована
+        </div>
+        <button type="button"
+            class="ms-auto -mx-1.5 -my-1.5 bg-green-50 text-green-500 focus:ring-2 focus:ring-green-400 p-1.5 hover:bg-green-200 inline-flex items-center justify-center h-8 w-8"
+            data-dismiss-target="#alert-ulr-copied" aria-label="Close">
+            <span class="sr-only">Close</span>
+            <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+            </svg>
+        </button>
+    </div>
+
+    <div class="relative overflow-x-auto">
+        <table class="w-full text-sm text-left rtl:text-right text-gray-500">
+            <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                <tr>
+                    <th scope="col" class="px-6 py-3">
+                        Месяц
+                    </th>
+                    <th scope="col" class="px-6 py-3 text-center">
+                        Совокупный доход в месяц (gross)
+                    </th>
+                    <th scope="col" class="px-6 py-3 text-center">
+                        Налогооблагаемая база
+                    </th>
+                    <th scope="col" class="px-6 py-3 text-center">
+                        Совокупный доход в месяц (net)
+                    </th>
+                    <th scope="col" class="px-6 py-3 text-center">
+                        НДФЛ
+                    </th>
+                    <th scope="col" class="px-6 py-3 text-center">
+                        Ставка НДФЛ
+                    </th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+            </tbody>
+            <tfoot id="tableFoot">
+            </tfoot>
+        </table>
+    </div>
+
+    <template id="trTemplate">
+        <tr class="bg-white border-b border-gray-200">
+            <th id="col1" scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
+                col1
+            </th>
+            <td id="col2" class="px-6 py-4 text-center">
+                col2
+            </td>
+            <td id="col3" class="px-6 py-4 text-center">
+                col3
+            </td>
+            <td id="col4" class="px-6 py-4 text-center">
+                col4
+            </td>
+            <td id="col5" class="px-6 py-4 text-center">
+                col5
+            </td>
+            <td id="col6" class="px-6 py-4 text-center">
+                col6
+            </td>
+        </tr>
+    </template>
+
+    <template id="grossOptsTemplate">
+        <div class="">
+            <div id="change">
+                Изменение №
+            </div>
+            <form class="">
+                <label for="month" class="block mb-2 text-sm font-medium text-gray-900">Начиная с месяца</label>
+                <select id="month"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 ">
+                    <option value="1">Февраль</option>
+                    <option value="2">Март</option>
+                    <option value="3">Апрель</option>
+                    <option value="4">Май</option>
+                    <option value="5">Июнь</option>
+                    <option value="6">Июль</option>
+                    <option value="7">Август</option>
+                    <option value="8">Сентябрь</option>
+                    <option value="9">Октябрь</option>
+                    <option value="10">Ноябрь</option>
+                    <option value="11">Декабрь</option>
+                </select>
+            </form>
+            <div>
+                <label for="additionalAmount" class="block mb-2 text-sm font-medium text-gray-900 ">Сумма до вычета налогов</label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 end-3 flex items-center ps-3.5 pointer-events-none">
+                        <svg class="w-4 h-4 text-gray-500" width="50%" height="50%" viewBox="0 0 24 24" fill="none"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M8.5 11.5H14.5C16.7091 11.5 18.5 9.70914 18.5 7.5C18.5 5.29086 16.7091 3.5 14.5 3.5H8.5V11.5ZM8.5 11.5H6.5M13.5 15.5H6.5M8.5 4V20.5"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </div>
+                    <input type="text" id="additionalAmount"
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                        placeholder="Введите сумму" required />
+                </div>
+            </div>
+
+            <button id="remove" type="button"
+                class="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium text-sm px-5 py-2.5 me-2 mb-2">Удалить</button>
+        </div>
+    </template>
 
     <script src="https://printjs-4de6.kxcdn.com/print.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/decimal.js/10.4.3/decimal.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q"
-        crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/3.0.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
@@ -164,6 +223,10 @@
     <script src="foot.js"></script>
     <script src="font.js"></script>
     <script src="font2.js"></script>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/simple-datatables@9.0.3"></script>
 </body>
 
 </html>

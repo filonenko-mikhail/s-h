@@ -71,7 +71,7 @@ var input = document.getElementById("input");
 var cont = document.getElementById("grossOptsContainer");
 addition.addEventListener('click',
     function (e) {
-        grossOptsContainer.classList.remove("hide")
+        grossOptsContainer.removeAttribute('hidden')
         addGrossOpts();
         renderGrossOptsData();
     }
@@ -198,63 +198,41 @@ function calc(value) {
     }
 
     for (let i = 0; i < arr.length; i++) {
-        const row = document.createElement("tr");
-        const month = document.createElement("th");
-        month.setAttribute("scope", "row");
-        month.textContent = arr[i];
-        row.appendChild(month);
+        var templ = document.getElementById("trTemplate");
+        let clon = templ.content.cloneNode(true);
+        var col1 = clon.getElementById("col1")
+        col1.textContent = arr[i];
+        var col2 = clon.getElementById("col2")
 
-        const grossTd = document.createElement("td");
-        grossTd.textContent = removeSuffix(data[i]['gross'].toFixed(2), '.00') + '₽';
-        row.appendChild(grossTd);
+        col2.textContent = toRuMoney(data[i]['gross']);
+        var col3 = clon.getElementById("col3")
+        col3.textContent = toRuMoney(data[i]['base']);
+        var col4 = clon.getElementById("col4")
+        col4.textContent = toRuMoney(data[i]['net'])
+        var col5 = clon.getElementById("col5")
+        col5.textContent = toRuMoney(data[i]['ndfl']);
+        var col6 = clon.getElementById("col6")
+        col6.textContent = data[i]['percents'].join('->');
 
-        const nbaseTd = document.createElement("td");
-        nbaseTd.textContent = removeSuffix(data[i]['base'].toFixed(2), '.00') + '₽';
-        row.appendChild(nbaseTd);
-
-        const netTd = document.createElement("td");
-        netTd.textContent = removeSuffix(data[i]['net'].toFixed(2), '.00') + '₽';
-        row.appendChild(netTd);
-
-        const ndflTd = document.createElement("td");
-        ndflTd.textContent = removeSuffix(data[i]['ndfl'].toFixed(2), '.00') + '₽';
-        row.appendChild(ndflTd);
-
-        const stTd = document.createElement("td");
-        stTd.textContent = data[i]['percents'].join('->');
-        row.appendChild(stTd);
-
-        tableBody.appendChild(row);
+        tableBody.appendChild(clon)
     }
 
-    const result = document.createElement("tr");
-    result.className = 'table-info';
+    var templ = document.getElementById("trTemplate");
+    let clon = templ.content.cloneNode(true);
+    var col1 = clon.getElementById("col1")
+    col1.textContent = "Итого";
+    var col2 = clon.getElementById("col2")
+    col2.textContent = toRuMoney(grossSum);
+    var col3 = clon.getElementById("col3")
+    col3.textContent = '';
+    var col4 = clon.getElementById("col4")
+    col4.textContent = toRuMoney(netSum);
+    var col5 = clon.getElementById("col5")
+    col5.textContent = '';
+    var col6 = clon.getElementById("col6")
+    col6.textContent = '';
 
-    const resultTd1 = document.createElement("th");
-    resultTd1.setAttribute("scope", "row");
-    resultTd1.textContent = "Итого";
-    result.appendChild(resultTd1);
-
-    const resultTd2 = document.createElement("td");
-    resultTd2.textContent = removeSuffix(grossSum.toFixed(2), '.00') + '₽';
-    result.appendChild(resultTd2);
-
-    const resultTd3 = document.createElement("td");
-    resultTd3.textContent = '';
-    result.appendChild(resultTd3);
-
-    const resultTd4 = document.createElement("td");
-    resultTd4.textContent = removeSuffix(netSum.toFixed(2), '.00') + '₽';
-    result.appendChild(resultTd4);
-    const resultTd5 = document.createElement("td");
-    resultTd5.textContent = '';
-    result.appendChild(resultTd5);
-
-    const resultTd6 = document.createElement("td");
-    resultTd6.textContent = '';
-    result.appendChild(resultTd6);
-
-    tableFoot.appendChild(result);
+    tableFoot.appendChild(clon);
 }
 
 
@@ -293,15 +271,15 @@ function loadStateFromUrl() {
 
 function updateOptsVisibility() {
     if (netRadio.checked) {
-        netOpts.classList.remove("hide")
+        netOpts.removeAttribute('hidden')
 
-        grossOpts.classList.add("hide")
-        grossOptsContainer.classList.add("hide")
+        grossOpts.setAttribute("hidden", '')
+        grossOptsContainer.setAttribute("hidden", '')
     } else {
-        netOpts.classList.add("hide")
+        netOpts.setAttribute("hidden", '')
 
-        grossOpts.classList.remove("hide")
-        grossOptsContainer.classList.remove("hide")
+        grossOpts.removeAttribute("hidden")
+        grossOptsContainer.removeAttribute("hidden")
     }
 }
 grossRadio.addEventListener('change', function () {
@@ -332,3 +310,55 @@ window.addEventListener('popstate', function () {
         calc(amountEl.value);
     }
 });
+
+if (document.getElementById("default-table") && typeof simpleDatatables.DataTable !== 'undefined') {
+    const dataTable = new simpleDatatables.DataTable("#default-table", {
+        searchable: false,
+        perPageSelect: false
+    });
+}
+
+/*
+decimal_sep: character used as decimal separator, it defaults to '.' when omitted
+thousands_sep: char used as thousands separator, it defaults to ',' when omitted
+*/
+toMoney = function (decimals, decimal_sep, thousands_sep, currency) {
+    var n = this,
+        c = decimals.isNaN() ? 2 : decimals.abs(), // If decimal is zero we must take it. It means the user does not want to show any decimal
+        d = decimal_sep || '.', // If no decimal separator is passed, we use the dot as default decimal separator (we MUST use a decimal separator)
+
+        /*
+        According to [https://stackoverflow.com/questions/411352/how-best-to-determine-if-an-argument-is-not-sent-to-the-javascript-function]
+        the fastest way to check for not defined parameter is to use typeof value === 'undefined'
+        rather than doing value === undefined.
+        */
+        t = (typeof thousands_sep === 'undefined') ? ',' : thousands_sep, // If you don't want to use a thousands separator you can pass empty string as thousands_sep value
+
+        sign = (n < 0) ? '-' : '',
+
+        // Extracting the absolute value of the integer part of the number and converting to string
+        i = parseInt(n = n.abs().toFixed(c)) + '',
+
+        j = ((j = i.length) > 3) ? j % 3 : 0;
+    return sign + (j ? i.substr(0, j) + t : '') + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : '') + currency;
+}
+
+
+function toRuMoney(number) {
+
+    const formatter = new Intl.NumberFormat('ru-RU', {
+        style: 'currency',
+        currency: 'RUB',
+        minimumFractionDigits: 2,
+    });
+
+    const fraction = new Intl.NumberFormat('ru-RU', {
+        style: 'currency',
+        currency: 'RUB',
+        minimumFractionDigits: 0,
+    });
+    if (number.mod(1) == 0)
+        return fraction.format(number);
+    else
+        return formatter.format(number);
+}

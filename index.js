@@ -1,3 +1,7 @@
+Decimal.set({ precision: 20, minE: -3 });
+
+var data = [];
+
 var amountEl = document.getElementById('amount');
 
 var grossRadio = document.getElementById('grossRadio');
@@ -13,16 +17,22 @@ function addGrossOpts() {
     if (grossOptsData.length > 10) {
         return
     }
+    additionalAmount = amountEl.value;
+    if (grossOptsData.length>0) {
+        additionalAmount = grossOptsData[grossOptsData.length-1]['amount'];
+    } 
     grossOptsData.push(
         {
-            "amount": "1111",
+            "amount": amountEl.value,
             "month": "1",
         }
     )
+    saveStateToUrl();
 }
 
 function removeGrossOpts(index) {
     grossOptsData.splice(index, 1);
+    saveStateToUrl();
 }
 
 function renderGrossOptsData() {
@@ -77,10 +87,6 @@ addition.addEventListener('click',
     }
 );
 
-
-
-Decimal.set({ precision: 20, minE: -3 });
-
 const arr = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
     'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
 var tableBody = document.getElementById('tableBody');
@@ -92,8 +98,6 @@ function removeSuffix(str, suffix) {
     }
     return str;
 }
-
-var data = [];
 
 function calc(value) {
     tableBody.replaceChildren();
@@ -235,40 +239,6 @@ function calc(value) {
     tableFoot.appendChild(clon);
 }
 
-
-function saveStateToUrl() {
-    const state = {
-        amount: amountEl.value,
-        net: netRadio.checked,
-    };
-    const params = new URLSearchParams();
-    for (const key in state) {
-        params.set(key, state[key]);
-    }
-    history.pushState(state, '', `?${params.toString()}`);
-}
-
-function loadStateFromUrl() {
-    const params = new URLSearchParams(window.location.search);
-    const loadedState = {};
-    for (const [key, value] of params.entries()) {
-        loadedState[key] = value;
-    }
-    // Apply loadedState to your application
-    console.log('Loaded State:', loadedState);
-    if (loadedState['amount'] != undefined) {
-        amountEl.value = loadedState['amount'];
-    }
-
-    if (loadedState['net'] === 'true') {
-        netRadio.checked = true;
-        grossRadio.checked = false;
-    } else {
-        netRadio.checked = false;
-        grossRadio.checked = true;
-    }
-}
-
 function updateOptsVisibility() {
     if (netRadio.checked) {
         netOpts.removeAttribute('hidden')
@@ -316,49 +286,4 @@ if (document.getElementById("default-table") && typeof simpleDatatables.DataTabl
         searchable: false,
         perPageSelect: false
     });
-}
-
-/*
-decimal_sep: character used as decimal separator, it defaults to '.' when omitted
-thousands_sep: char used as thousands separator, it defaults to ',' when omitted
-*/
-toMoney = function (decimals, decimal_sep, thousands_sep, currency) {
-    var n = this,
-        c = decimals.isNaN() ? 2 : decimals.abs(), // If decimal is zero we must take it. It means the user does not want to show any decimal
-        d = decimal_sep || '.', // If no decimal separator is passed, we use the dot as default decimal separator (we MUST use a decimal separator)
-
-        /*
-        According to [https://stackoverflow.com/questions/411352/how-best-to-determine-if-an-argument-is-not-sent-to-the-javascript-function]
-        the fastest way to check for not defined parameter is to use typeof value === 'undefined'
-        rather than doing value === undefined.
-        */
-        t = (typeof thousands_sep === 'undefined') ? ',' : thousands_sep, // If you don't want to use a thousands separator you can pass empty string as thousands_sep value
-
-        sign = (n < 0) ? '-' : '',
-
-        // Extracting the absolute value of the integer part of the number and converting to string
-        i = parseInt(n = n.abs().toFixed(c)) + '',
-
-        j = ((j = i.length) > 3) ? j % 3 : 0;
-    return sign + (j ? i.substr(0, j) + t : '') + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : '') + currency;
-}
-
-
-function toRuMoney(number) {
-
-    const formatter = new Intl.NumberFormat('ru-RU', {
-        style: 'currency',
-        currency: 'RUB',
-        minimumFractionDigits: 2,
-    });
-
-    const fraction = new Intl.NumberFormat('ru-RU', {
-        style: 'currency',
-        currency: 'RUB',
-        minimumFractionDigits: 0,
-    });
-    if (number.mod(1) == 0)
-        return fraction.format(number);
-    else
-        return formatter.format(number);
 }

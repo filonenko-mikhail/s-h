@@ -272,25 +272,21 @@ function calc(value) {
 
     tableFoot.appendChild(clon);
 
-    if (netRadio.checked) {
-        try {
-            amount = new Decimal(value);
-            bonus = amount.mul(12).minus(netSum)
-            if (bonus.gt(0)) {
-                alertNetCompensation.removeAttribute('hidden')
-                var bonusStr = toRuMoney(bonus)
-                alertNetCompensation.innerHTML = 
-                `Для компенсации снижения заработной платы после вычета налогов можно использовать премию размером ${bonusStr}` 
-            } else {
-                alertNetCompensation.setAttribute('hidden', '')
-            }
-        } catch (error) {
+
+    try {
+        amount = data[0]['net']
+        bonus = amount.mul(12).minus(netSum)
+        if (bonus.gt(0)) {
+            alertNetCompensation.removeAttribute('hidden')
+            var bonusStr = toRuMoney(bonus)
+            alertNetCompensation.innerHTML =
+                `Для компенсации снижения заработной платы после вычета налогов можно использовать премию размером ${bonusStr}`
+        } else {
             alertNetCompensation.setAttribute('hidden', '')
         }
-    } else {
+    } catch (error) {
         alertNetCompensation.setAttribute('hidden', '')
     }
-
 }
 
 function updateOptsVisibility() {

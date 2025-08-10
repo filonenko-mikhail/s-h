@@ -12,12 +12,13 @@ var grossOptsContainer = document.getElementById('grossOptsContainer');
 var netOpts = document.getElementById('netOpts');
 
 var grossFromNetBanner = document.getElementById('alert-gross-from-net');
+var grossFromNetBannerText = document.getElementById('alert-gross-from-net-text');
 
 var addition = document.getElementById("grossAddition");
 var input = document.getElementById("input");
 
 var alertNetCompensation = document.getElementById('alert-net-compensation');
-
+var alertNetCompensationText = document.getElementById('alert-net-compensation-text');
 
 var grossOptsData = [];
 
@@ -144,15 +145,17 @@ function calc(value) {
         ['5_000_000', '20_000_000', '0.18',],
         ['20_000_000', '50_000_000', '0.20',],
         ['50_000_000', '+Infinity', '0.22',],
-    ]
+    ];
     var grossSum = Decimal(0);
     var netSum = Decimal(0);
     data = [];
     var nBase = Decimal(0);
     var maxMonth = 0;
+    var netAmounts = [];
+
     for (let i = 0; i < arr.length; i++) {
         var gross = amount;
-        if (!netRadio.checked) {
+        if (!netRadio.checked && i != 0) {
             for (let gg = 0; gg < grossOptsData.length; gg++) {
                 var additionalMonth = parseInt(grossOptsData[gg].month)
                 if (i >= additionalMonth && additionalMonth >= maxMonth) {
@@ -209,6 +212,9 @@ function calc(value) {
 
         grossSum = grossSum.plus(gross);
         netSum = netSum.plus(gross.minus(ndfl));
+        if (i == 0) {
+            netAmounts.push(gross.minus(ndfl));
+        }
     }
 
     for (let i = 0; i < arr.length; i++) {
@@ -218,7 +224,6 @@ function calc(value) {
         var col1 = clon.getElementById("col1")
         col1.textContent = arr[i];
         var col2 = clon.getElementById("col2")
-
         col2.textContent = toRuMoney(data[i]['gross']);
         var col3 = clon.getElementById("col3")
         col3.textContent = toRuMoney(data[i]['base']);
@@ -273,18 +278,19 @@ function calc(value) {
     tableFoot.appendChild(clon);
 
 
-    try {
+    if (netRadio.checked) {
         amount = data[0]['net']
         bonus = amount.mul(12).minus(netSum)
+        console.log(bonus.toFixed(2))
         if (bonus.gt(0)) {
             alertNetCompensation.removeAttribute('hidden')
             var bonusStr = toRuMoney(bonus)
-            alertNetCompensation.innerHTML =
+            alertNetCompensationText.innerHTML =
                 `Для компенсации снижения заработной платы после вычета налогов можно использовать премию размером ${bonusStr}`
         } else {
             alertNetCompensation.setAttribute('hidden', '')
         }
-    } catch (error) {
+    } else {
         alertNetCompensation.setAttribute('hidden', '')
     }
 }
@@ -326,7 +332,7 @@ function updateGrossFromNetBanner() {
         var gross = calcGrossAmount(amountEl.value);
         if (!gross.isZero()) {
             var output = toRuMoney(gross);
-            grossFromNetBanner.innerHTML = `Сумма заработной платы до вычета налогов (gross) в месяц составит ${output}`;
+            grossFromNetBannerText.innerHTML = `Сумма заработной платы до вычета налогов (gross) в месяц составит ${output}`;
             grossFromNetBanner.removeAttribute('hidden')
         } else {
             grossFromNetBanner.setAttribute("hidden", '')

@@ -248,6 +248,7 @@ function calc(value) {
             var templ = document.getElementById("trBannerTemplate");
             let clon = templ.content.cloneNode(true);
 
+            console.log(description)
             var col1 = clon.getElementById("col1")
             col1.innerHTML = description;
             tableBody.appendChild(clon);

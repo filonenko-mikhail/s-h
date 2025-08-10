@@ -9,10 +9,11 @@ function toRuMoney(number) {
         currency: 'RUB',
         minimumFractionDigits: 0,
     });
-    if (number.mod(1) == 0)
+    if (number.toDP(2).mod(1).isZero()) {
         return fraction.format(number);
-    else
+    } else {
         return formatter.format(number);
+    }
 }
 
 function saveStateToUrl() {
@@ -48,7 +49,6 @@ function loadStateFromUrl() {
     }
 
     if (typeof loadedState['grossOptsData'] == 'string') {
-        console.log(JSON.parse(loadedState['grossOptsData']));
         grossOptsData = JSON.parse(loadedState['grossOptsData']);
         renderGrossOptsData();
     }

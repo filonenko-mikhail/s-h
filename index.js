@@ -11,6 +11,14 @@ var grossOpts = document.getElementById('grossOpts');
 var grossOptsContainer = document.getElementById('grossOptsContainer');
 var netOpts = document.getElementById('netOpts');
 
+var grossFromNetBanner = document.getElementById('alert-gross-from-net');
+
+var addition = document.getElementById("grossAddition");
+var input = document.getElementById("input");
+
+var alertNetCompensation = document.getElementById('alert-net-compensation');
+
+
 var grossOptsData = [];
 
 function addGrossOpts() {
@@ -18,9 +26,9 @@ function addGrossOpts() {
         return
     }
     additionalAmount = amountEl.value;
-    if (grossOptsData.length>0) {
-        additionalAmount = grossOptsData[grossOptsData.length-1]['amount'];
-    } 
+    if (grossOptsData.length > 0) {
+        additionalAmount = grossOptsData[grossOptsData.length - 1]['amount'];
+    }
     grossOptsData.push(
         {
             "amount": amountEl.value,
@@ -60,6 +68,7 @@ function renderGrossOptsData() {
         additionalAmount.addEventListener('change', function (e) {
             currentData.amount = additionalAmount.value;
             calc(amountEl.value);
+            saveStateToUrl();
         })
 
         changeLabel.innerHTML = "Изменение " + (i + 1)
@@ -68,17 +77,12 @@ function renderGrossOptsData() {
         month.addEventListener('change', function (e) {
             currentData.month = month.value;
             calc(amountEl.value);
+            saveStateToUrl();
         })
         cont.appendChild(clon)
     }
 }
 
-renderGrossOptsData();
-
-var addition = document.getElementById("grossAddition");
-var input = document.getElementById("input");
-
-var cont = document.getElementById("grossOptsContainer");
 addition.addEventListener('click',
     function (e) {
         grossOptsContainer.removeAttribute('hidden')
@@ -92,27 +96,19 @@ const arr = ['Январь', 'Февраль', 'Март', 'Апрель', 'Ма
 var tableBody = document.getElementById('tableBody');
 var tableFoot = document.getElementById('tableFoot');
 
-function removeSuffix(str, suffix) {
-    if (str.endsWith(suffix)) {
-        return str.slice(0, -suffix.length);
-    }
-    return str;
-}
-
-function calc(value) {
-    tableBody.replaceChildren();
-    tableFoot.replaceChildren();
+function calcGrossAmount(value) {
+    value = value.replaceAll(' ', '')
     if (value == '') {
-        return
+        return new Decimal(0);
     }
     var amount = new Decimal(0);
     try {
         amount = new Decimal(value);
     } catch (error) {
+        console.log(error)
         alert("Неправильное значение суммы заработной платы");
-        return;
+        return new Decimal(0);
     }
-
     if (netRadio.checked) {
         if (amount.gt('40598000')) {
             amount = amount.minus('1598000').div('0.78')
@@ -126,7 +122,22 @@ function calc(value) {
             amount = amount.div(new Decimal('0.87'))
         }
     }
+    return amount
+}
 
+function calc(value) {
+    tableBody.replaceChildren();
+    tableFoot.replaceChildren();
+    value = value.replaceAll(' ', '')
+    if (value == '') {
+        return
+    }
+
+    amount = calcGrossAmount(value);
+    if (amount.isZero()) {
+        alertNetCompensation.setAttribute('hidden', '')
+        return
+    }
     var zones = [
         ['0', '2_400_000', '0.13',],
         ['2_400_000', '5_000_000', '0.15',],
@@ -134,18 +145,13 @@ function calc(value) {
         ['20_000_000', '50_000_000', '0.20',],
         ['50_000_000', '+Infinity', '0.22',],
     ]
-
     var grossSum = Decimal(0);
     var netSum = Decimal(0);
-
     data = [];
     var nBase = Decimal(0);
-
     var maxMonth = 0;
-
     for (let i = 0; i < arr.length; i++) {
         var gross = amount;
-
         if (!netRadio.checked) {
             for (let gg = 0; gg < grossOptsData.length; gg++) {
                 var additionalMonth = parseInt(grossOptsData[gg].month)
@@ -185,7 +191,11 @@ function calc(value) {
         for (let s = 0; s < slices.length; s++) {
             ndfl = ndfl.plus(slices[s][0].mul(slices[s][1]));
 
-            percents.push(new Decimal(slices[s][1]).mul('100').toFixed(0) + "%");
+            percents.push(
+                {
+                    ndflPartAmount: slices[s][0].mul(slices[s][1]),
+                    percent: new Decimal(slices[s][1]).mul('100').toFixed(0) + "%",
+                });
         }
 
         console.log(gross.toFixed(2), end.toFixed(2), gross.minus(ndfl).toFixed(2), ndfl.toFixed(2), percents);
@@ -204,6 +214,7 @@ function calc(value) {
     for (let i = 0; i < arr.length; i++) {
         var templ = document.getElementById("trTemplate");
         let clon = templ.content.cloneNode(true);
+
         var col1 = clon.getElementById("col1")
         col1.textContent = arr[i];
         var col2 = clon.getElementById("col2")
@@ -215,10 +226,32 @@ function calc(value) {
         col4.textContent = toRuMoney(data[i]['net'])
         var col5 = clon.getElementById("col5")
         col5.textContent = toRuMoney(data[i]['ndfl']);
-        var col6 = clon.getElementById("col6")
-        col6.textContent = data[i]['percents'].join('->');
 
-        tableBody.appendChild(clon)
+        var descriptions = []
+        var p = []
+        for (let j = 0; j < data[i]['percents'].length; j++) {
+            p.push(data[i]['percents'][j]['percent'])
+            var amount = toRuMoney(data[i]['percents'][j]['ndflPartAmount'])
+            descriptions.push(`${amount} для процента ${data[i]['percents'][j]['percent']}`)
+
+        }
+        var part = descriptions.join(', ');
+        var ndflAmount = toRuMoney(data[i]['ndfl'])
+        var description = `Общая сумма налогов составляет ${ndflAmount} из них: ${part}`;
+
+        var col6 = clon.getElementById("col6");
+        col6.textContent = p.join('->');
+
+        tableBody.appendChild(clon);
+
+        if (descriptions.length > 1) {
+            var templ = document.getElementById("trBannerTemplate");
+            let clon = templ.content.cloneNode(true);
+
+            var col1 = clon.getElementById("col1")
+            col1.innerHTML = description;
+            tableBody.appendChild(clon);
+        }
     }
 
     var templ = document.getElementById("trTemplate");
@@ -237,6 +270,26 @@ function calc(value) {
     col6.textContent = '';
 
     tableFoot.appendChild(clon);
+
+    if (netRadio.checked) {
+        try {
+            amount = new Decimal(value);
+            bonus = amount.mul(12).minus(netSum)
+            if (bonus.gt(0)) {
+                alertNetCompensation.removeAttribute('hidden')
+                var bonusStr = toRuMoney(bonus)
+                alertNetCompensation.innerHTML = 
+                `Для компенсации снижения заработной платы после вычета налогов можно использовать премию размером ${bonusStr}` 
+            } else {
+                alertNetCompensation.setAttribute('hidden', '')
+            }
+        } catch (error) {
+            alertNetCompensation.setAttribute('hidden', '')
+        }
+    } else {
+        alertNetCompensation.setAttribute('hidden', '')
+    }
+
 }
 
 function updateOptsVisibility() {
@@ -256,23 +309,38 @@ grossRadio.addEventListener('change', function () {
     calc(amountEl.value);
     saveStateToUrl();
     updateOptsVisibility();
+    updateGrossFromNetBanner();
 });
 netRadio.addEventListener('change', function () {
     calc(amountEl.value);
     saveStateToUrl();
     updateOptsVisibility();
+    updateGrossFromNetBanner();
 });
 
 amountEl.addEventListener("change", (event) => {
     calc(event.target.value);
     saveStateToUrl();
+    updateGrossFromNetBanner();
 });
+
+function updateGrossFromNetBanner() {
+    if (netRadio.checked) {
+        var gross = calcGrossAmount(amountEl.value);
+        if (!gross.isZero()) {
+            var output = toRuMoney(gross);
+            grossFromNetBanner.innerHTML = `Сумма заработной платы до вычета налогов (gross) в месяц составит ${output}`;
+            grossFromNetBanner.removeAttribute('hidden')
+        } else {
+            grossFromNetBanner.setAttribute("hidden", '')
+        }
+    } else {
+        grossFromNetBanner.setAttribute("hidden", '')
+    }
+}
 
 loadStateFromUrl();
 updateOptsVisibility();
-if (amountEl.value != undefined) {
-    calc(amountEl.value);
-}
 window.addEventListener('popstate', function () {
     loadStateFromUrl();
     updateOptsVisibility();
@@ -281,9 +349,8 @@ window.addEventListener('popstate', function () {
     }
 });
 
-if (document.getElementById("default-table") && typeof simpleDatatables.DataTable !== 'undefined') {
-    const dataTable = new simpleDatatables.DataTable("#default-table", {
-        searchable: false,
-        perPageSelect: false
-    });
+if (amountEl.value != undefined) {
+    calc(amountEl.value);
 }
+renderGrossOptsData();
+updateGrossFromNetBanner();

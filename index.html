@@ -25,18 +25,7 @@
             font-weight: 700;
             color: #333;
         }
-
-        
     </style>
-
-    <script>
-        // On page load or when changing themes, best to add inline in `head` to avoid FOUC
-        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.remove('dark');
-        } else {
-            document.documentElement.classList.remove('dark')
-        }
-    </script>
 </head>
 
 <body class="p-6 font-sans antialiased">
@@ -101,19 +90,31 @@
             <path
                 d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
         </svg>
-        <span class="sr-only">Info</span>
+        <span class="sr-only">Инфо</span>
         <div class="ms-3 text-sm font-medium">
             Ссылка скопирована
         </div>
         <button type="button"
             class="ms-auto -mx-1.5 -my-1.5 bg-green-50 text-green-500 focus:ring-2 focus:ring-green-400 p-1.5 hover:bg-green-200 inline-flex items-center justify-center h-8 w-8"
             data-dismiss-target="#alert-ulr-copied" aria-label="Close">
-            <span class="sr-only">Close</span>
+            <span class="sr-only">Закрыть</span>
             <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
             </svg>
         </button>
+    </div>
+
+    <div id="alert-gross-from-net" class="flex items-center p-4 mb-4 text-green-800 bg-green-50" role="alert">
+        <svg class="shrink-0 w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
+            viewBox="0 0 20 20">
+            <path
+                d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
+        </svg>
+        <span class="sr-only">Инфо</span>
+        <div class="ms-3 text-sm font-medium">
+            Заработная плата до вычета налогов (gross) составит ${N} в месяц
+        </div>
     </div>
 
     <div class="relative overflow-x-auto">
@@ -124,13 +125,13 @@
                         Месяц
                     </th>
                     <th scope="col" class="px-6 py-3 text-center">
-                        Совокупный доход в месяц (gross)
+                        Доход до ндфл (gross)
                     </th>
                     <th scope="col" class="px-6 py-3 text-center">
-                        Налогооблагаемая база
+                        Совокупный gross с 01 января
                     </th>
                     <th scope="col" class="px-6 py-3 text-center">
-                        Совокупный доход в месяц (net)
+                        Доход на руки (net)
                     </th>
                     <th scope="col" class="px-6 py-3 text-center">
                         НДФЛ
@@ -145,6 +146,17 @@
             <tfoot id="tableFoot">
             </tfoot>
         </table>
+    </div>
+    <div id="alert-net-compensation" class="flex items-center p-4 mb-4 text-green-800 bg-green-50" role="alert">
+        <svg class="shrink-0 w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
+            viewBox="0 0 20 20">
+            <path
+                d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
+        </svg>
+        <span class="sr-only">Инфо</span>
+        <div class="ms-3 text-sm font-medium">
+            Заработная плата до вычета налогов (gross) составит ${N} в месяц
+        </div>
     </div>
 
     <template id="trTemplate">
@@ -167,6 +179,26 @@
             <td id="col6" class="px-6 py-4 text-center">
                 col6
             </td>
+        </tr>
+    </template>
+
+    <template id="trBannerTemplate">
+        <tr class="bg-white border-b border-gray-200">
+            <th colspan="6" scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
+                <div class="flex items-center p-4 mb-4 text-green-800 bg-green-50"
+                    role="alert">
+                    <svg class="shrink-0 w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                        fill="currentColor" viewBox="0 0 20 20">
+                        <path
+                            d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
+                    </svg>
+                    <span class="sr-only">Инфо</span>
+                    <div id="col1" class="ms-3 text-sm font-medium">
+                        Заработная плата до вычета налогов (gross) составит ${N} в месяц
+                    </div>
+                </div>
+                
+            </th>
         </tr>
     </template>
 
@@ -193,7 +225,8 @@
                 </select>
             </form>
             <div>
-                <label for="additionalAmount" class="block mb-2 text-sm font-medium text-gray-900 ">Сумма до вычета налогов</label>
+                <label for="additionalAmount" class="block mb-2 text-sm font-medium text-gray-900 ">Сумма до вычета
+                    налогов</label>
                 <div class="relative">
                     <div class="absolute inset-y-0 end-3 flex items-center ps-3.5 pointer-events-none">
                         <svg class="w-4 h-4 text-gray-500" width="50%" height="50%" viewBox="0 0 24 24" fill="none"

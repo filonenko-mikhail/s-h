@@ -8,15 +8,23 @@
 
     <title>Калькулятор суммы офера</title>
 
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;700&display=swap" rel="stylesheet">
 
     <link href="https://printjs-4de6.kxcdn.com/print.min.css" rel="stylesheet">
-
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 
     <link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/simple-datatables@9.0.3"></script>
 
+
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style type="text/tailwindcss">
+        @theme {
+        --font-body: 'IBM Plex Sans',Arial,sans-serif;
+        --font-sans: 'IBM Plex Sans',Arial,sans-serif;
+        --font-weight: 400;
+        --font-size: 20px;
+      }
+    </style>
     <style>
         #logo {
             font-family: 'IBM Plex Sans', sans-serif;
@@ -26,16 +34,28 @@
     </style>
 </head>
 
-<body class="p-6 font-sans antialiased">
-    <h1 id="logo" class="text-4xl font-bold">
-        Search&Hire
-    </h1>
+<body class="antialiased mx-[80px] px-[40px]">
+    <div id="logo" class="h-[140px] text-right">
+        <h1 style="font-size: 30px" class="font-bold ">
+            Search&Hire
+        </h1>
+        <div style="font-size: 14px">Рекрутмент и HR проекты</div>
+        <div style="font-size: 14px" class="pt-[14px]">
+            www.search-hire.com
+        </div>
+        <div style="font-size: 14px">
+            hello@search-hire.com
+        </div>
+        <div style="font-size: 14px">
+            t.me/search_and_hire
+        </div>
+    </div>
     <form class="">
-        <div>
-            <label for="amount" class="block mb-2 text-sm font-medium text-gray-900 ">Сумма</label>
-            <div class="relative">
+        <div class="">
+            <label for="amount" class="block mb-2 text-sm font-medium text-zinc-900">Сумма</label>
+            <div class="w-80 relative">
                 <div class="absolute inset-y-0 end-3 flex items-center ps-3.5 pointer-events-none">
-                    <svg class="w-4 h-4 text-gray-500" width="50%" height="50%" viewBox="0 0 24 24" fill="none"
+                    <svg class="w-4 h-4 text-zinc-500" width="50%" height="50%" viewBox="0 0 24 24" fill="none"
                         xmlns="http://www.w3.org/2000/svg">
                         <path
                             d="M8.5 11.5H14.5C16.7091 11.5 18.5 9.70914 18.5 7.5C18.5 5.29086 16.7091 3.5 14.5 3.5H8.5V11.5ZM8.5 11.5H6.5M13.5 15.5H6.5M8.5 4V20.5"
@@ -43,19 +63,19 @@
                     </svg>
                 </div>
                 <input type="text" id="amount" name="amount"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                    class="bg-zinc-50 border border-zinc-300 text-zinc-900 text-sm focus:ring-zinc-500 focus:border-zinc-500 block w-full p-2.5"
                     placeholder="Введите сумму" required />
             </div>
         </div>
         <div class="">
-            <input checked id="netRadio" type="radio" value="" name="default-radio"
-                class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 focus:ring-2">
-            <label for="netRadio" class="ms-2 text-sm font-medium text-gray-900 ">На руки</label>
+            <input checked id="netRadio" type="radio" value="" name="amount-radio"
+                class="w-4 h-4 text-zinc-600 bg-zinc-100 border-zinc-300 focus:ring-zinc-500 focus:ring-2">
+            <label for="netRadio" class="ms-2 text-sm font-medium text-zinc-900 ">На руки</label>
         </div>
         <div class="">
-            <input id="grossRadio" type="radio" value="" name="default-radio"
-                class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 ">
-            <label for="grossRadio" class="ms-2 text-sm font-medium text-gray-900">До вычета НДФЛ</label>
+            <input id="grossRadio" type="radio" value="" name="amount-radio"
+                class="w-4 h-4 text-zinc-600 bg-zinc-100 border-zinc-300 focus:ring-zinc-500 ">
+            <label for="grossRadio" class="ms-2 text-sm font-medium text-zinc-900">До вычета НДФЛ</label>
         </div>
     </form>
 
@@ -63,23 +83,22 @@
         <!--TODO opts-->
     </div>
 
-    <div class="" id="grossOpts">
-        <button type="button" id="grossAddition"
-            class="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium text-sm px-5 py-2.5 text-center me-2 mb-2">Добавить
-            изменение</button>
-    </div>
     <div class="" id="grossOptsContainer">
     </div>
-
-
+    <div class="" id="grossOpts">
+        <button type="button" id="grossAddition"
+            class="rounded-full text-white bg-zinc-500 hover:bg-zinc-700 focus:outline-none focus:ring-4 focus:ring-zinc-200 font-medium text-sm px-5 py-2.5 text-center me-2 mb-2">Добавить
+            изменение</button>
+    </div>
     <div class="">
         <button type="button" id="generate-pdf"
-            class="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium text-sm px-5 py-2.5 text-center me-2 mb-2">PDF</button>
+            class="rounded-full text-white bg-zinc-500 hover:bg-zinc-700 focus:outline-none focus:ring-4 focus:ring-zinc-200 font-medium text-sm px-5 py-2.5 text-center me-2 mb-2">Сохранить
+            PDF</button>
         <button type="button" id="print"
-            class="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium text-sm px-5 py-2.5 text-center me-2 mb-2">Печать</button>
+            class="rounded-full text-white bg-zinc-500 hover:bg-zinc-700 focus:outline-none focus:ring-4 focus:ring-zinc-200 font-medium text-sm px-5 py-2.5 text-center me-2 mb-2">Распечатать</button>
         <button type="button" id="copy-url"
-            class="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium text-sm px-5 py-2.5 text-center me-2 mb-2">Копировать
-            URL</button>
+            class="rounded-full text-white bg-zinc-500 hover:bg-zinc-700 focus:outline-none focus:ring-4 focus:ring-zinc-200 font-medium text-sm px-5 py-2.5 text-center me-2 mb-2">Скопировать
+            ссылку на расчет</button>
     </div>
 
     <div id="alert-ulr-copied" class="flex items-center p-4 mb-4 text-green-800 bg-green-50" role="alert" hidden>
@@ -115,36 +134,34 @@
         </div>
     </div>
 
-    <div class="relative overflow-x-auto">
-        <table class="w-full text-sm text-left rtl:text-right text-gray-500">
-            <thead class="text-xs text-gray-700 uppercase bg-gray-50">
-                <tr>
-                    <th scope="col" class="px-6 py-3">
-                        Месяц
-                    </th>
-                    <th scope="col" class="px-6 py-3 text-center">
-                        Доход до ндфл (gross)
-                    </th>
-                    <th scope="col" class="px-6 py-3 text-center">
-                        Совокупный gross с 01 января
-                    </th>
-                    <th scope="col" class="px-6 py-3 text-center">
-                        Доход на руки (net)
-                    </th>
-                    <th scope="col" class="px-6 py-3 text-center">
-                        НДФЛ
-                    </th>
-                    <th scope="col" class="px-6 py-3 text-center">
-                        Ставка НДФЛ
-                    </th>
-                </tr>
-            </thead>
-            <tbody id="tableBody">
-            </tbody>
-            <tfoot id="tableFoot">
-            </tfoot>
-        </table>
-    </div>
+    <table class="table-auto w-full text-sm text-left rtl:text-right text-zinc-500">
+        <thead class="text-xs text-zinc-700 uppercase bg-zinc-50">
+            <tr>
+                <th scope="col" class="px-6 py-3">
+                    Месяц
+                </th>
+                <th scope="col" class="px-6 py-3 text-center">
+                    Доход до ндфл (gross)
+                </th>
+                <th scope="col" class="px-6 py-3 text-center">
+                    Совокупный gross с 01 января
+                </th>
+                <th scope="col" class="px-6 py-3 text-center">
+                    Доход на руки (net)
+                </th>
+                <th scope="col" class="px-6 py-3 text-center">
+                    НДФЛ
+                </th>
+                <th scope="col" class="px-6 py-3 text-center">
+                    Ставка НДФЛ
+                </th>
+            </tr>
+        </thead>
+        <tbody id="tableBody">
+        </tbody>
+        <tfoot id="tableFoot">
+        </tfoot>
+    </table>
     <div id="alert-net-compensation" class="flex items-center p-4 mb-4 text-green-800 bg-green-50" role="alert" hidden>
         <svg class="shrink-0 w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
             viewBox="0 0 20 20">
@@ -158,8 +175,8 @@
     </div>
 
     <template id="trTemplate">
-        <tr class="bg-white border-b border-gray-200">
-            <th id="col1" scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
+        <tr class="bg-white border-b border-zinc-200">
+            <th id="col1" scope="row" class="px-6 py-4 font-medium text-zinc-900 whitespace-nowrap">
                 col1
             </th>
             <td id="col2" class="px-6 py-4 text-center">
@@ -181,10 +198,9 @@
     </template>
 
     <template id="trBannerTemplate">
-        <tr class="bg-white border-b border-gray-200">
-            <th colspan="6" scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
-                <div class="flex items-center p-4 mb-4 text-green-800 bg-green-50"
-                    role="alert">
+        <tr class="bg-white border-b border-zinc-200">
+            <th colspan="6" scope="row" class="px-6 py-4 font-medium text-zinc-900 whitespace-nowrap">
+                <div class="flex items-center p-4 mb-4 text-green-800 bg-green-50" role="alert">
                     <svg class="shrink-0 w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                         fill="currentColor" viewBox="0 0 20 20">
                         <path
@@ -200,14 +216,14 @@
     </template>
 
     <template id="grossOptsTemplate">
-        <div class="">
+        <div class="flex items-center">
             <div id="change">
                 Изменение №
             </div>
             <form class="">
-                <label for="month" class="block mb-2 text-sm font-medium text-gray-900">Начиная с месяца</label>
+                <label for="month" class="block mb-2 text-sm font-medium text-zinc-900">Начиная с месяца</label>
                 <select id="month"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 ">
+                    class="bg-zinc-50 border border-zinc-300 text-zinc-900 text-sm focus:ring-zinc-500 focus:border-zinc-500 block w-full p-2.5 ">
                     <option value="1">Февраль</option>
                     <option value="2">Март</option>
                     <option value="3">Апрель</option>
@@ -222,11 +238,11 @@
                 </select>
             </form>
             <div>
-                <label for="additionalAmount" class="block mb-2 text-sm font-medium text-gray-900 ">Сумма до вычета
+                <label for="additionalAmount" class="block mb-2 text-sm font-medium text-zinc-900 ">Сумма до вычета
                     налогов</label>
                 <div class="relative">
                     <div class="absolute inset-y-0 end-3 flex items-center ps-3.5 pointer-events-none">
-                        <svg class="w-4 h-4 text-gray-500" width="50%" height="50%" viewBox="0 0 24 24" fill="none"
+                        <svg class="w-4 h-4 text-zinc-500" width="50%" height="50%" viewBox="0 0 24 24" fill="none"
                             xmlns="http://www.w3.org/2000/svg">
                             <path
                                 d="M8.5 11.5H14.5C16.7091 11.5 18.5 9.70914 18.5 7.5C18.5 5.29086 16.7091 3.5 14.5 3.5H8.5V11.5ZM8.5 11.5H6.5M13.5 15.5H6.5M8.5 4V20.5"
@@ -234,13 +250,20 @@
                         </svg>
                     </div>
                     <input type="text" id="additionalAmount"
-                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                        class="bg-zinc-50 border border-zinc-300 text-zinc-900 text-sm focus:ring-zinc-500 focus:border-zinc-500 block w-full p-2.5"
                         placeholder="Введите сумму" required />
                 </div>
             </div>
 
             <button id="remove" type="button"
-                class="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium text-sm px-5 py-2.5 me-2 mb-2">Удалить</button>
+                class="rounded-full focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium text-sm px-5 py-2.5 me-2 mb-2">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                    stroke="currentColor" class="size-6">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                </svg>
+                <!-- Удалить -->
+            </button>
         </div>
     </template>
 
@@ -257,6 +280,8 @@
 
     <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/simple-datatables@9.0.3"></script>
+
+
 </body>
 
 </html>

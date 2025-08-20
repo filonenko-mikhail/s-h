@@ -27,15 +27,22 @@ function addGrossOpts() {
         return
     }
     additionalAmount = amountEl.value;
+    var item = 1
     if (grossOptsData.length > 0) {
         additionalAmount = grossOptsData[grossOptsData.length - 1]['amount'];
+        item = grossOptsData[grossOptsData.length - 1]['month'] + 1;
+        if (item > 12) {
+            item = 12;
+        }
     }
+
     grossOptsData.push(
         {
-            "amount": amountEl.value,
-            "month": "1",
+            "amount": additionalAmount,
+            "month": item,
         }
     )
+    console.log(grossOptsData);
     saveStateToUrl();
 }
 
@@ -148,6 +155,7 @@ function calc(value) {
     ];
     var grossSum = Decimal(0);
     var netSum = Decimal(0);
+    var ndflSum = Decimal(0);
     data = [];
     var nBase = Decimal(0);
     var maxMonth = 0;
@@ -210,6 +218,7 @@ function calc(value) {
             "percents": percents,
         })
 
+        ndflSum = ndflSum.plus(ndfl);
         grossSum = grossSum.plus(gross);
         netSum = netSum.plus(gross.minus(ndfl));
         if (i == 0) {
@@ -232,12 +241,29 @@ function calc(value) {
         var col5 = clon.getElementById("col5")
         col5.textContent = toRuMoney(data[i]['ndfl']);
 
+
+        var percents = data[i]['percents'];
+        if (i > 0) {
+            var prevPercents = data[i - 1]['percents'];
+            var prevPercentValue = prevPercents[prevPercents.length - 1]['percent'];
+            if (prevPercentValue != percents[0]['percent']) {
+                var templ = document.getElementById("trBannerTemplate");
+                let clon = templ.content.cloneNode(true);
+
+                var col1 = clon.getElementById("col1")
+                col1.innerHTML = "В этом месяце налоговая ставка изменилась: " + prevPercentValue.toString() + "->" + percents[0]['percent'];
+                tableBody.appendChild(clon);
+            }
+        }
+
+
         var descriptions = []
         var p = []
-        for (let j = 0; j < data[i]['percents'].length; j++) {
-            p.push(data[i]['percents'][j]['percent'])
-            var amount = toRuMoney(data[i]['percents'][j]['ndflPartAmount'])
-            descriptions.push(`${amount} для процента ${data[i]['percents'][j]['percent']}`)
+
+        for (let j = 0; j < percents.length; j++) {
+            p.push(percents[j]['percent'])
+            var amount = toRuMoney(percents[j]['ndflPartAmount'])
+            descriptions.push(`${amount} для процента ${percents[j]['percent']}`)
 
         }
         var part = descriptions.join(', ');
@@ -253,7 +279,6 @@ function calc(value) {
             var templ = document.getElementById("trBannerTemplate");
             let clon = templ.content.cloneNode(true);
 
-            console.log(description)
             var col1 = clon.getElementById("col1")
             col1.innerHTML = description;
             tableBody.appendChild(clon);
@@ -271,7 +296,7 @@ function calc(value) {
     var col4 = clon.getElementById("col4")
     col4.textContent = toRuMoney(netSum);
     var col5 = clon.getElementById("col5")
-    col5.textContent = '';
+    col5.textContent = toRuMoney(ndflSum);
     var col6 = clon.getElementById("col6")
     col6.textContent = '';
 

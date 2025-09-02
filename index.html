@@ -34,25 +34,26 @@
     </style>
 </head>
 
-<body class="antialiased mx-[80px] px-[40px]">
-    <div id="logo" class="h-[140px] text-right">
+<body class="antialiased lg:mx-[80px] lg:px-[40px]">
+    <div id="logo" class="text-right">
         <h1 style="font-size: 30px" class="font-bold ">
             Search&Hire
         </h1>
         <div style="font-size: 14px">Рекрутмент и HR проекты</div>
         <div style="font-size: 14px" class="pt-[14px]">
-            www.search-hire.com
+            <a href="https://www.search-hire.com">www.search-hire.com</a>
         </div>
         <div style="font-size: 14px">
-            hello@search-hire.com
+            <a href="mailto:hello@search-hire.com">hello@search-hire.com</a>
         </div>
         <div style="font-size: 14px">
-            t.me/search_and_hire
+            <a href="https://t.me/search_and_hire">t.me/search_and_hire</a>
         </div>
     </div>
+    <hr class="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700">
     <form class="">
-        <div class="">
-            <label for="amount" class="block mb-2 text-sm font-medium text-zinc-900">Сумма</label>
+        <div class="flex flex-wrap gap-4 items-baseline mt-4 px-6">
+            <label for="amount" class="text-zinc-900">Сумма</label>
             <div class="w-80 relative">
                 <div class="absolute inset-y-0 end-3 flex items-center ps-3.5 pointer-events-none">
                     <svg class="w-4 h-4 text-zinc-500" width="50%" height="50%" viewBox="0 0 24 24" fill="none"
@@ -63,52 +64,64 @@
                     </svg>
                 </div>
                 <input type="text" id="amount" name="amount"
-                    class="bg-zinc-50 border border-zinc-300 text-zinc-900 text-sm focus:ring-zinc-500 focus:border-zinc-500 block w-full p-2.5"
+                    class="bg-zinc-50 border border-zinc-300 text-zinc-900 focus:ring-zinc-500 focus:border-zinc-500 block w-full p-2.5"
                     placeholder="Введите сумму" required />
             </div>
-        </div>
-        <div class="">
-            <input checked id="netRadio" type="radio" value="" name="amount-radio"
-                class="w-4 h-4 text-zinc-600 bg-zinc-100 border-zinc-300 focus:ring-zinc-500 focus:ring-2">
-            <label for="netRadio" class="ms-2 text-sm font-medium text-zinc-900 ">На руки</label>
-        </div>
-        <div class="">
-            <input id="grossRadio" type="radio" value="" name="amount-radio"
-                class="w-4 h-4 text-zinc-600 bg-zinc-100 border-zinc-300 focus:ring-zinc-500 ">
-            <label for="grossRadio" class="ms-2 text-sm font-medium text-zinc-900">До вычета НДФЛ</label>
+            <div>
+                <input checked id="netRadio" type="radio" value="" name="amount-radio"
+                    class="w-4 h-4 text-zinc-600 bg-zinc-100 border-zinc-300 focus:ring-zinc-500 focus:ring-2">
+                <label for="netRadio" class="ms-2 text-zinc-900 ">На руки</label>
+                <input id="grossRadio" type="radio" value="" name="amount-radio"
+                    class="w-4 h-4 text-zinc-600 bg-zinc-100 border-zinc-300 focus:ring-zinc-500 ">
+                <label for="grossRadio" class="ms-2 text-zinc-900">До вычета НДФЛ</label>
+            </div>
+
+            <div class="" id="grossControls">
+                <button type="button" id="grossAddition"
+                    class="rounded-full text-white bg-zinc-500 hover:bg-zinc-700 focus:outline-none focus:ring-4 focus:ring-zinc-200 px-5 py-2.5 text-center">Добавить
+                    изменение</button>
+            </div>
         </div>
     </form>
 
-    <div class="" id="netOpts">
+    <div class="" id="netControls">
         <!--TODO opts-->
     </div>
 
-    <div class="" id="grossOptsContainer">
-    </div>
-    <div class="" id="grossOpts">
-        <button type="button" id="grossAddition"
-            class="rounded-full text-white bg-zinc-500 hover:bg-zinc-700 focus:outline-none focus:ring-4 focus:ring-zinc-200 font-medium text-sm px-5 py-2.5 text-center me-2 mb-2">Добавить
-            изменение</button>
-    </div>
-    <div class="">
-        <button type="button" id="generate-pdf"
-            class="rounded-full text-white bg-zinc-500 hover:bg-zinc-700 focus:outline-none focus:ring-4 focus:ring-zinc-200 font-medium text-sm px-5 py-2.5 text-center me-2 mb-2">Сохранить
-            PDF</button>
-        <button type="button" id="print"
-            class="rounded-full text-white bg-zinc-500 hover:bg-zinc-700 focus:outline-none focus:ring-4 focus:ring-zinc-200 font-medium text-sm px-5 py-2.5 text-center me-2 mb-2">Распечатать</button>
-        <button type="button" id="copy-url"
-            class="rounded-full text-white bg-zinc-500 hover:bg-zinc-700 focus:outline-none focus:ring-4 focus:ring-zinc-200 font-medium text-sm px-5 py-2.5 text-center me-2 mb-2">Скопировать
-            ссылку на расчет</button>
+    <div class="px-6" id="grossOptsContainer">
     </div>
 
-    <div id="alert-ulr-copied" class="flex items-center p-4 mb-4 text-green-800 bg-green-50" role="alert" hidden>
+    <div id="alert-gross-from-net" class="flex items-center px-6 p-4 text-green-800 bg-green-50 mt-4" role="alert">
         <svg class="shrink-0 w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
             viewBox="0 0 20 20">
             <path
                 d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
         </svg>
         <span class="sr-only">Инфо</span>
-        <div class="ms-3 text-sm font-medium">
+        <div id="alert-gross-from-net-text" class="ms-3">
+            Заработная плата до вычета налогов (gross) составит ${N} в месяц
+        </div>
+    </div>
+
+    <div class="flex flex-wrap gap-4 items-baseline mt-4">
+        <button type="button" id="generate-pdf"
+            class="rounded-full text-white bg-zinc-500 hover:bg-zinc-700 focus:outline-none focus:ring-4 focus:ring-zinc-200 px-5 py-2.5 text-center">Сохранить
+            PDF</button>
+        <button type="button" id="print"
+            class="rounded-full text-white bg-zinc-500 hover:bg-zinc-700 focus:outline-none focus:ring-4 focus:ring-zinc-200 px-5 py-2.5 text-center">Распечатать</button>
+        <button type="button" id="copy-url"
+            class="rounded-full text-white bg-zinc-500 hover:bg-zinc-700 focus:outline-none focus:ring-4 focus:ring-zinc-200 px-5 py-2.5 text-center">Скопировать
+            ссылку на расчет</button>
+    </div>
+
+    <div id="alert-ulr-copied" class="flex items-center px-6 p-4 text-green-800 bg-green-50 mt-4" role="alert" hidden>
+        <svg class="shrink-0 w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
+            viewBox="0 0 20 20">
+            <path
+                d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
+        </svg>
+        <span class="sr-only">Инфо</span>
+        <div class="ms-3">
             Ссылка скопирована
         </div>
         <button type="button"
@@ -122,20 +135,10 @@
         </button>
     </div>
 
-    <div id="alert-gross-from-net" class="flex items-center p-4 mb-4 text-green-800 bg-green-50" role="alert">
-        <svg class="shrink-0 w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
-            viewBox="0 0 20 20">
-            <path
-                d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
-        </svg>
-        <span class="sr-only">Инфо</span>
-        <div id="alert-gross-from-net-text" class="ms-3 text-sm font-medium">
-            Заработная плата до вычета налогов (gross) составит ${N} в месяц
-        </div>
-    </div>
+    
 
-    <table class="table-auto w-full text-sm text-left rtl:text-right text-zinc-500">
-        <thead class="text-xs text-zinc-700 uppercase bg-zinc-50">
+    <table class="table-auto w-full text-sm text-left rtl:text-right text-zinc-500 mt-4">
+        <thead class="text-zinc-700 uppercase bg-zinc-50">
             <tr>
                 <th scope="col" class="px-6 py-3">
                     Месяц
@@ -162,21 +165,21 @@
         <tfoot id="tableFoot">
         </tfoot>
     </table>
-    <div id="alert-net-compensation" class="flex items-center p-4 mb-4 text-green-800 bg-green-50" role="alert" hidden>
+    <div id="alert-net-compensation" class="flex items-center px-6 p-4 text-green-800 bg-green-50 mt-4" role="alert" hidden>
         <svg class="shrink-0 w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
             viewBox="0 0 20 20">
             <path
                 d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
         </svg>
         <span class="sr-only">Инфо</span>
-        <div id="alert-net-compensation-text" class="ms-3 text-sm font-medium">
+        <div id="alert-net-compensation-text" class="ms-3">
             Заработная плата до вычета налогов (gross) составит ${N} в месяц
         </div>
     </div>
 
     <template id="trTemplate">
         <tr class="bg-white border-b border-zinc-200">
-            <th id="col1" scope="row" class="px-6 py-4 font-medium text-zinc-900 whitespace-nowrap">
+            <th id="col1" scope="row" class="px-6 py-4 text-zinc-900 whitespace-nowrap">
                 col1
             </th>
             <td id="col2" class="px-6 py-4 text-center">
@@ -199,15 +202,15 @@
 
     <template id="trBannerTemplate">
         <tr class="bg-white border-b border-zinc-200">
-            <th colspan="6" scope="row" class="px-6 py-4 font-medium text-zinc-900 whitespace-nowrap">
-                <div class="flex items-center p-4 mb-4 text-green-800 bg-green-50" role="alert">
+            <th colspan="6" scope="row" class="text-zinc-900 whitespace-nowrap">
+                <div class="flex items-center px-6 p-4 text-green-800 bg-green-50" role="alert">
                     <svg class="shrink-0 w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                         fill="currentColor" viewBox="0 0 20 20">
                         <path
                             d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
                     </svg>
                     <span class="sr-only">Инфо</span>
-                    <div id="col1" class="ms-3 text-sm font-medium">
+                    <div id="col1" class="ms-3">
                         Налог составит
                     </div>
                 </div>
@@ -216,29 +219,30 @@
     </template>
 
     <template id="grossOptsTemplate">
-        <div class="flex items-center">
-            <div id="change">
-                Изменение №
-            </div>
-            <form class="">
-                <label for="month" class="block mb-2 text-sm font-medium text-zinc-900">Начиная с месяца</label>
-                <select id="month"
-                    class="bg-zinc-50 border border-zinc-300 text-zinc-900 text-sm focus:ring-zinc-500 focus:border-zinc-500 block w-full p-2.5 ">
-                    <option value="1">Февраль</option>
-                    <option value="2">Март</option>
-                    <option value="3">Апрель</option>
-                    <option value="4">Май</option>
-                    <option value="5">Июнь</option>
-                    <option value="6">Июль</option>
-                    <option value="7">Август</option>
-                    <option value="8">Сентябрь</option>
-                    <option value="9">Октябрь</option>
-                    <option value="10">Ноябрь</option>
-                    <option value="11">Декабрь</option>
-                </select>
-            </form>
-            <div>
-                <label for="additionalAmount" class="block mb-2 text-sm font-medium text-zinc-900 ">Сумма до вычета
+        <div class="flex flex-wrap gap-4 items-baseline mt-4">
+            <b>
+                <div id="change">
+                    Изменение №
+                </div>
+            </b>
+            <label for="month" class="block text-zinc-900">Начиная с месяца</label>
+            <select id="month"
+                class="bg-zinc-50 border border-zinc-300 text-zinc-900 focus:ring-zinc-500 focus:border-zinc-500 p-2.5 w-40">
+                <option value="1">Февраль</option>
+                <option value="2">Март</option>
+                <option value="3">Апрель</option>
+                <option value="4">Май</option>
+                <option value="5">Июнь</option>
+                <option value="6">Июль</option>
+                <option value="7">Август</option>
+                <option value="8">Сентябрь</option>
+                <option value="9">Октябрь</option>
+                <option value="10">Ноябрь</option>
+                <option value="11">Декабрь</option>
+            </select>
+
+            <div class="flex flex-wrap gap-4 items-baseline">
+                <label for="additionalAmount" class="text-zinc-900 ">Сумма до вычета
                     налогов</label>
                 <div class="relative">
                     <div class="absolute inset-y-0 end-3 flex items-center ps-3.5 pointer-events-none">
@@ -250,13 +254,13 @@
                         </svg>
                     </div>
                     <input type="text" id="additionalAmount"
-                        class="bg-zinc-50 border border-zinc-300 text-zinc-900 text-sm focus:ring-zinc-500 focus:border-zinc-500 block w-full p-2.5"
+                        class="bg-zinc-50 border border-zinc-300 text-zinc-900 focus:ring-zinc-500 focus:border-zinc-500 p-2.5"
                         placeholder="Введите сумму" required />
                 </div>
             </div>
 
             <button id="remove" type="button"
-                class="rounded-full focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium text-sm px-5 py-2.5 me-2 mb-2">
+                class="self-center rounded-full focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300  px-5 py-2.5">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                     stroke="currentColor" class="size-6">
                     <path stroke-linecap="round" stroke-linejoin="round"
@@ -280,8 +284,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/simple-datatables@9.0.3"></script>
-
-
 </body>
 
 </html>

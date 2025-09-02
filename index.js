@@ -1,91 +1,95 @@
-Decimal.set({ precision: 20, minE: -3 });
+Decimal.set({ precision: 20, minE: -3 })
 
-var data = [];
+var data = []
 
-var amountEl = document.getElementById('amount');
+var amountEl = document.getElementById('amount')
 
-var grossRadio = document.getElementById('grossRadio');
-var netRadio = document.getElementById('netRadio');
+var grossRadio = document.getElementById('grossRadio')
+var netRadio = document.getElementById('netRadio')
 
-var grossOpts = document.getElementById('grossOpts');
-var grossOptsContainer = document.getElementById('grossOptsContainer');
-var netOpts = document.getElementById('netOpts');
+var grossControls = document.getElementById('grossControls')
+var grossOptsContainer = document.getElementById('grossOptsContainer')
+var netControls = document.getElementById('netControls')
 
-var grossFromNetBanner = document.getElementById('alert-gross-from-net');
-var grossFromNetBannerText = document.getElementById('alert-gross-from-net-text');
+var grossFromNetBanner = document.getElementById('alert-gross-from-net')
+var grossFromNetBannerText = document.getElementById('alert-gross-from-net-text')
 
-var addition = document.getElementById("grossAddition");
-var input = document.getElementById("input");
+var addition = document.getElementById("grossAddition")
+var input = document.getElementById("input")
 
-var alertNetCompensation = document.getElementById('alert-net-compensation');
-var alertNetCompensationText = document.getElementById('alert-net-compensation-text');
+var alertNetCompensation = document.getElementById('alert-net-compensation')
+var alertNetCompensationText = document.getElementById('alert-net-compensation-text')
 
-var grossOptsData = [];
+var grossOptsData = []
 
 function addGrossOpts() {
     if (grossOptsData.length > 10) {
         return
     }
-    additionalAmount = amountEl.value;
-    var item = 1
+    additionalAmount = amountEl.value
+    var monthItem = 1
     if (grossOptsData.length > 0) {
-        additionalAmount = grossOptsData[grossOptsData.length - 1]['amount'];
-        item = grossOptsData[grossOptsData.length - 1]['month'] + 1;
-        if (item > 12) {
-            item = 12;
+        additionalAmount = grossOptsData[grossOptsData.length - 1]['amount']
+        monthItem = grossOptsData[grossOptsData.length - 1]['month'] + 1
+        console.log(monthItem)
+        if (monthItem > 11) {
+            monthItem = 11
         }
     }
 
     grossOptsData.push(
         {
             "amount": additionalAmount,
-            "month": item,
+            "month": monthItem,
         }
     )
-    console.log(grossOptsData);
-    saveStateToUrl();
+    console.log(grossOptsData)
+    saveStateToUrl()
 }
 
 function removeGrossOpts(index) {
-    grossOptsData.splice(index, 1);
-    saveStateToUrl();
+    grossOptsData.splice(index, 1)
+    saveStateToUrl()
 }
 
 function renderGrossOptsData() {
-    var templ = document.getElementById("grossOptsTemplate");
-    var cont = document.getElementById("grossOptsContainer");
+    var templ = document.getElementById("grossOptsTemplate")
+    var cont = document.getElementById("grossOptsContainer")
 
-    cont.replaceChildren([]);
+    cont.replaceChildren([])
     for (let i = 0; i < grossOptsData.length; i++) {
-        let clon = templ.content.cloneNode(true);
-        let additionalAmount = clon.getElementById("additionalAmount");
-        let removeBtn = clon.getElementById("remove");
-        let changeLabel = clon.getElementById("change");
-        let month = clon.getElementById("month");
+        let clon = templ.content.cloneNode(true)
+        let additionalAmount = clon.getElementById("additionalAmount")
+        let removeBtn = clon.getElementById("remove")
+        let changeLabel = clon.getElementById("change")
+        let month = clon.getElementById("month")
 
-        let index = i;
+        let index = i
         removeBtn.addEventListener('click', function (e) {
-            removeGrossOpts(index);
-            renderGrossOptsData();
-            calc(amountEl.value);
-        });
+            removeGrossOpts(index)
+            renderGrossOptsData()
+            calc(amountEl.value)
+        })
 
         let currentData = grossOptsData[i]
-        additionalAmount.value = currentData.amount;
+        additionalAmount.value = currentData.amount
 
         additionalAmount.addEventListener('change', function (e) {
-            currentData.amount = additionalAmount.value;
-            calc(amountEl.value);
-            saveStateToUrl();
+            currentData.amount = additionalAmount.value
+            calc(amountEl.value)
+            saveStateToUrl()
         })
 
         changeLabel.innerHTML = "Изменение " + (i + 1)
+        if (i + 1 < 10) {
+            changeLabel.innerHTML = changeLabel.innerHTML + ""
+        }
 
-        month.value = currentData.month;
+        month.value = currentData.month
         month.addEventListener('change', function (e) {
-            currentData.month = month.value;
-            calc(amountEl.value);
-            saveStateToUrl();
+            currentData.month = month.value
+            calc(amountEl.value)
+            saveStateToUrl()
         })
         cont.appendChild(clon)
     }
@@ -94,28 +98,28 @@ function renderGrossOptsData() {
 addition.addEventListener('click',
     function (e) {
         grossOptsContainer.removeAttribute('hidden')
-        addGrossOpts();
-        renderGrossOptsData();
+        addGrossOpts()
+        renderGrossOptsData()
     }
-);
+)
 
 const arr = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
-    'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
-var tableBody = document.getElementById('tableBody');
-var tableFoot = document.getElementById('tableFoot');
+    'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь']
+var tableBody = document.getElementById('tableBody')
+var tableFoot = document.getElementById('tableFoot')
 
 function calcGrossAmount(value) {
     value = value.replaceAll(' ', '')
     if (value == '') {
-        return new Decimal(0);
+        return new Decimal(0)
     }
-    var amount = new Decimal(0);
+    var amount = new Decimal(0)
     try {
-        amount = new Decimal(value);
+        amount = new Decimal(value)
     } catch (error) {
         console.log(error)
-        alert("Неправильное значение суммы заработной платы");
-        return new Decimal(0);
+        alert("Неправильное значение суммы заработной платы")
+        return new Decimal(0)
     }
     if (netRadio.checked) {
         if (amount.gt('40598000')) {
@@ -134,14 +138,14 @@ function calcGrossAmount(value) {
 }
 
 function calc(value) {
-    tableBody.replaceChildren();
-    tableFoot.replaceChildren();
+    tableBody.replaceChildren()
+    tableFoot.replaceChildren()
     value = value.replaceAll(' ', '')
     if (value == '') {
         return
     }
 
-    amount = calcGrossAmount(value);
+    amount = calcGrossAmount(value)
     if (amount.isZero()) {
         alertNetCompensation.setAttribute('hidden', '')
         return
@@ -152,64 +156,64 @@ function calc(value) {
         ['5_000_000', '20_000_000', '0.18',],
         ['20_000_000', '50_000_000', '0.20',],
         ['50_000_000', '+Infinity', '0.22',],
-    ];
-    var grossSum = Decimal(0);
-    var netSum = Decimal(0);
-    var ndflSum = Decimal(0);
-    data = [];
-    var nBase = Decimal(0);
-    var maxMonth = 0;
-    var netAmounts = [];
+    ]
+    var grossSum = Decimal(0)
+    var netSum = Decimal(0)
+    var ndflSum = Decimal(0)
+    data = []
+    var nBase = Decimal(0)
+    var maxMonth = 0
+    var netAmounts = []
 
     for (let i = 0; i < arr.length; i++) {
-        var gross = amount;
+        var gross = amount
         if (!netRadio.checked && i != 0) {
             for (let gg = 0; gg < grossOptsData.length; gg++) {
                 var additionalMonth = parseInt(grossOptsData[gg].month)
                 if (i >= additionalMonth && additionalMonth >= maxMonth) {
-                    gross = new Decimal(grossOptsData[gg].amount);
-                    maxMonth = additionalMonth;
+                    gross = new Decimal(grossOptsData[gg].amount)
+                    maxMonth = additionalMonth
                 }
             }
         }
 
-        var start = nBase;
-        var end = nBase.plus(gross);
-        nBase = nBase.plus(gross);
+        var start = nBase
+        var end = nBase.plus(gross)
+        nBase = nBase.plus(gross)
 
-        var slices = [];
+        var slices = []
         for (let z = 0; z < zones.length; z++) {
-            var slice = new Decimal(0);
+            var slice = new Decimal(0)
             if (start.gte(zones[z][0]) && start.lt(zones[z][1])) {
-                var e = Decimal.min(end, zones[z][1]);
-                var slice = [e.minus(start), zones[z][2]];
+                var e = Decimal.min(end, zones[z][1])
+                var slice = [e.minus(start), zones[z][2]]
 
                 if (e.minus(start).gt('0')) {
-                    slices.push(slice);
+                    slices.push(slice)
                 }
             } else if (start.lt(zones[z][0]) && end.gte(zones[z][0])) {
-                var e = Decimal.min(end, zones[z][1]);
-                var slice = [e.minus(zones[z][0]), zones[z][2]];
+                var e = Decimal.min(end, zones[z][1])
+                var slice = [e.minus(zones[z][0]), zones[z][2]]
 
                 if (e.minus(zones[z][0]).gt('0')) {
-                    slices.push(slice);
+                    slices.push(slice)
                 }
             }
         }
 
-        var percents = [];
-        var ndfl = new Decimal(0);
+        var percents = []
+        var ndfl = new Decimal(0)
         for (let s = 0; s < slices.length; s++) {
-            ndfl = ndfl.plus(slices[s][0].mul(slices[s][1]));
+            ndfl = ndfl.plus(slices[s][0].mul(slices[s][1]))
 
             percents.push(
                 {
                     ndflPartAmount: slices[s][0].mul(slices[s][1]),
                     percent: new Decimal(slices[s][1]).mul('100').toFixed(0) + "%",
-                });
+                })
         }
 
-        console.log(gross.toFixed(2), end.toFixed(2), gross.minus(ndfl).toFixed(2), ndfl.toFixed(2), percents);
+        console.log(gross.toFixed(2), end.toFixed(2), gross.minus(ndfl).toFixed(2), ndfl.toFixed(2), percents)
         data.push({
             "gross": gross,
             "base": end,
@@ -218,71 +222,72 @@ function calc(value) {
             "percents": percents,
         })
 
-        ndflSum = ndflSum.plus(ndfl);
-        grossSum = grossSum.plus(gross);
-        netSum = netSum.plus(gross.minus(ndfl));
+        ndflSum = ndflSum.plus(ndfl)
+        grossSum = grossSum.plus(gross)
+        netSum = netSum.plus(gross.minus(ndfl))
         if (i == 0) {
-            netAmounts.push(gross.minus(ndfl));
+            netAmounts.push(gross.minus(ndfl))
         }
     }
 
     for (let i = 0; i < arr.length; i++) {
-        var templ = document.getElementById("trTemplate");
-        let clon = templ.content.cloneNode(true);
+        var templ = document.getElementById("trTemplate")
+        let clon = templ.content.cloneNode(true)
 
         var col1 = clon.getElementById("col1")
-        col1.textContent = arr[i];
+        col1.textContent = arr[i]
         var col2 = clon.getElementById("col2")
-        col2.textContent = toRuMoney(data[i]['gross']);
+        col2.textContent = toRuMoney(data[i]['gross'])
         var col3 = clon.getElementById("col3")
-        col3.textContent = toRuMoney(data[i]['base']);
+        col3.textContent = toRuMoney(data[i]['base'])
         var col4 = clon.getElementById("col4")
         col4.textContent = toRuMoney(data[i]['net'])
         var col5 = clon.getElementById("col5")
-        col5.textContent = toRuMoney(data[i]['ndfl']);
-
-
-        var percents = data[i]['percents'];
-        if (i > 0) {
-            var prevPercents = data[i - 1]['percents'];
-            var prevPercentValue = prevPercents[prevPercents.length - 1]['percent'];
-            if (prevPercentValue != percents[0]['percent']) {
-                var templ = document.getElementById("trBannerTemplate");
-                let clon = templ.content.cloneNode(true);
-
-                var col1 = clon.getElementById("col1")
-                col1.innerHTML = "В этом месяце налоговая ставка изменилась: " + prevPercentValue.toString() + "->" + percents[0]['percent'];
-                tableBody.appendChild(clon);
-            }
-        }
-
+        col5.textContent = toRuMoney(data[i]['ndfl'])
 
         var descriptions = []
         var p = []
+        var percents = data[i]['percents']
 
         for (let j = 0; j < percents.length; j++) {
             p.push(percents[j]['percent'])
             var amount = toRuMoney(percents[j]['ndflPartAmount'])
             descriptions.push(`${amount} для процента ${percents[j]['percent']}`)
-
         }
         var part = descriptions.join(', ');
-        var ndflAmount = toRuMoney(data[i]['ndfl'])
-        var description = `Общая сумма налогов составляет ${ndflAmount} из них: ${part}`;
-
+        var ndflAmount = toRuMoney(data[i]['ndfl']);
+        
         var col6 = clon.getElementById("col6");
-        col6.textContent = p.join('->');
+        col6.innerHTML = p.join('&#8594;');
 
         tableBody.appendChild(clon);
 
         if (descriptions.length > 1) {
-            var templ = document.getElementById("trBannerTemplate");
-            let clon = templ.content.cloneNode(true);
+            var bannerPercentJoin = `Общая сумма налогов составляет ${ndflAmount} из них: ${part}`;
+
+            var templ = document.getElementById("trBannerTemplate")
+            let clon = templ.content.cloneNode(true)
 
             var col1 = clon.getElementById("col1")
-            col1.innerHTML = description;
-            tableBody.appendChild(clon);
+            col1.innerHTML = bannerPercentJoin
+            tableBody.appendChild(clon)
         }
+
+        if (i > 0) {
+            var prevPercents = data[i - 1]['percents']
+            var prevPercentValue = prevPercents[prevPercents.length - 1]['percent']
+            if (prevPercentValue != percents[0]['percent']) {
+                var bannerPercentChange = "В этом месяце налоговая ставка изменилась: " + prevPercentValue.toString() + "&#8594;" + percents[0]['percent']
+                
+                var templ = document.getElementById("trBannerTemplate")
+                let clon = templ.content.cloneNode(true)
+
+                var col1 = clon.getElementById("col1")
+                col1.innerHTML = bannerPercentChange
+                tableBody.appendChild(clon)
+            }
+        }
+
     }
 
     var templ = document.getElementById("trTemplate");
@@ -304,33 +309,33 @@ function calc(value) {
 
 
     if (netRadio.checked) {
-        amount = data[0]['net']
-        bonus = amount.mul(12).minus(netSum)
-        console.log(bonus.toFixed(2))
+        amount = data[0]['net'];
+        bonus = amount.mul(12).minus(netSum);
+        console.log(bonus.toFixed(2));
         if (bonus.gt(0)) {
-            alertNetCompensation.removeAttribute('hidden')
-            var bonusStr = toRuMoney(bonus)
+            alertNetCompensation.removeAttribute('hidden');
+            var bonusStr = toRuMoney(bonus);
             alertNetCompensationText.innerHTML =
-                `Для компенсации снижения заработной платы после вычета налогов можно использовать премию размером ${bonusStr}`
+                `Для компенсации снижения заработной платы после вычета налогов можно использовать премию размером ${bonusStr}`;
         } else {
-            alertNetCompensation.setAttribute('hidden', '')
+            alertNetCompensation.setAttribute('hidden', '');
         }
     } else {
-        alertNetCompensation.setAttribute('hidden', '')
+        alertNetCompensation.setAttribute('hidden', '');
     }
 }
 
 function updateOptsVisibility() {
     if (netRadio.checked) {
-        netOpts.removeAttribute('hidden')
+        netControls.removeAttribute('hidden');
 
-        grossOpts.setAttribute("hidden", '')
-        grossOptsContainer.setAttribute("hidden", '')
+        grossControls.setAttribute("hidden", '');
+        grossOptsContainer.setAttribute("hidden", '');
     } else {
-        netOpts.setAttribute("hidden", '')
+        netControls.setAttribute("hidden", '');
 
-        grossOpts.removeAttribute("hidden")
-        grossOptsContainer.removeAttribute("hidden")
+        grossControls.removeAttribute("hidden");
+        grossOptsContainer.removeAttribute("hidden");
     }
 }
 grossRadio.addEventListener('change', function () {
@@ -358,12 +363,12 @@ function updateGrossFromNetBanner() {
         if (!gross.isZero()) {
             var output = toRuMoney(gross);
             grossFromNetBannerText.innerHTML = `Сумма заработной платы до вычета налогов (gross) в месяц составит ${output}`;
-            grossFromNetBanner.removeAttribute('hidden')
+            grossFromNetBanner.removeAttribute('hidden');
         } else {
-            grossFromNetBanner.setAttribute("hidden", '')
+            grossFromNetBanner.setAttribute("hidden", '');
         }
     } else {
-        grossFromNetBanner.setAttribute("hidden", '')
+        grossFromNetBanner.setAttribute("hidden", '');
     }
 }
 
